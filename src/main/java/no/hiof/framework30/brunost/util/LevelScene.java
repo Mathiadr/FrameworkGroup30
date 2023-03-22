@@ -1,6 +1,6 @@
-package no.hiof.framework30.brunost;
+package no.hiof.framework30.brunost.util;
 
-public class LevelScene extends Scene{
+public class LevelScene extends Scene {
     public LevelScene(){
         System.out.println("Inside level scene");
         Window.get().r = 1;

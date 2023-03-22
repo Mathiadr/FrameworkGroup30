@@ -1,8 +1,7 @@
-package no.hiof.framework30.brunost;
+package no.hiof.framework30.brunost.util;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import util.Time;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -36,10 +35,12 @@ public class Window {
             case 0:
                 currentScene = new LevelEditorScene();
                 currentScene.init();
+                currentScene.onStart();
                 break;
             case 1:
                 currentScene = new LevelScene();
                 currentScene.init();
+                currentScene.onStart();
                 break;
             case 2:
                 assert false : "Unknown scene '" + newScene + "'";

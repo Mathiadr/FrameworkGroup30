@@ -1,4 +1,4 @@
-package util;
+package no.hiof.framework30.brunost.util;
 
 public class Time {
     public static float timeStarted = System.nanoTime();

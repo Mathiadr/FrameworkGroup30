@@ -1,4 +1,4 @@
-package no.hiof.framework30.brunost;
+package no.hiof.framework30.brunost.util;
 
 // Callbacks: https://www.glfw.org/docs/3.3/input_guide.html#input_mouse
 
