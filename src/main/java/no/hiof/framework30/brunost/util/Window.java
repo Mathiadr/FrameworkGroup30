@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 // Setup borrowed from https://www.lwjgl.org/guide
+
+// Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
 public class Window {
     int width, height;
     String title;
@@ -54,6 +56,10 @@ public class Window {
         }
 
         return Window.window;
+    }
+
+    public static Scene getScene(){
+        return get().currentScene;
     }
 
     public void run(){

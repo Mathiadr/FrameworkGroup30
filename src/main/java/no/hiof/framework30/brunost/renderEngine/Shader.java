@@ -12,6 +12,7 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 
+// Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
 public class Shader {
 
     private int shaderProgramID;
