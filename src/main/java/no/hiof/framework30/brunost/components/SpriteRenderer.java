@@ -1,20 +1,28 @@
 package no.hiof.framework30.brunost.components;
 
 import no.hiof.framework30.brunost.gameObjects.Component;
+import org.joml.Vector4f;
 
+// Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
 public class SpriteRenderer extends Component {
 
-    private boolean firstTime = false;
+    private Vector4f color;
+
+    public SpriteRenderer(Vector4f color){
+        this.color = color;
+    }
 
     @Override
     public void onStart() {
-        System.out.println("Updating!");
+
     }
 
     @Override
     public void onUpdate(float deltaTime) {
-        if (!firstTime)
-            System.out.println("Updating!");
-        firstTime = true;
+
+    }
+
+    public Vector4f getColor(){
+        return this.color;
     }
 }

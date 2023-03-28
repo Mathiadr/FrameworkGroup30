@@ -5,6 +5,7 @@ package no.hiof.framework30.brunost.util;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
+// Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
 public class MouseListener {
     private static MouseListener instance;
     private double scrollX, scrollY;

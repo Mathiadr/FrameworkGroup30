@@ -3,6 +3,7 @@ package no.hiof.framework30.brunost.util;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
+// Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
 public class KeyListener {
     private static KeyListener instance;
     private boolean keyPressed[] = new boolean[350]; // 350 is amount of keybindings GLFW has
