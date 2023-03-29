@@ -11,6 +11,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 // Setup borrowed from https://www.lwjgl.org/guide
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
+
+/**
+ * Represents the Window the game is to be run inside.
+ */
 public class Window {
     int width, height;
     String title;

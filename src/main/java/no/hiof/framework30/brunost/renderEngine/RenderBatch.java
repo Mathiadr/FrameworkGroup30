@@ -9,6 +9,14 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+/**
+ * Used to facilitate drastically optimized rendering of objects within a scene.
+ * This class is not meant to be used or modified, and documentation only exists for sake of transparency
+ * @see Renderer
+ * @see Shader
+ * @see Texture
+ *
+ */
 public class RenderBatch {
     // Vertex
     // ======

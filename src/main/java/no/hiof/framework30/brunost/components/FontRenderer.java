@@ -3,6 +3,8 @@ package no.hiof.framework30.brunost.components;
 import no.hiof.framework30.brunost.gameObjects.Component;
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
+
+
 public class FontRenderer extends Component {
 
 

@@ -5,6 +5,12 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
+
+/**
+ * Handles the area which is visible to the player.
+ * Essentially narrows the view of the player from the entire Scene
+ *
+ */
 public class Camera {
     private Matrix4f projectionMatrix, viewMatrix;
     public Vector2f position;

@@ -6,6 +6,12 @@ import no.hiof.framework30.brunost.gameObjects.GameObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles the rendering of objects and usage of shaders
+ * @see RenderBatch
+ * @see Shader
+ * @see Texture
+ */
 public class Renderer {
     private final int MAX_BATCH_SIZE = 1000;
     private List<RenderBatch> batches;

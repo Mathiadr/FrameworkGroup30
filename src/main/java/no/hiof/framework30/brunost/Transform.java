@@ -3,6 +3,11 @@ package no.hiof.framework30.brunost;
 import org.joml.Vector2f;
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
+
+/**
+ * The 2D properties of the object in position and scale.
+ * @see no.hiof.framework30.brunost.gameObjects.GameObject
+ */
 public class Transform {
 
     public Vector2f position;
