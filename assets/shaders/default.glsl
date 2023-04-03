@@ -2,29 +2,82 @@
 #version 330 core
 layout (location=0) in vec3 aPos;
 layout (location=1) in vec4 aColor;
+layout (location=2) in vec2 aTexCoords;
+layout (location=3) in float aTexId;
 
 uniform mat4 uProjection;
 uniform mat4 uView;
 
+out vec2 fPos;
 out vec4 fColor;
+out vec2 fTexCoords;
+out float fTexId;
 
 void main()
 {
+    vec4 pos = uProjection * uView * vec4(aPos, 1.0);
+    fPos = pos.xy;
     fColor = aColor;
-    gl_Position = uProjection * uView * vec4(aPos, 1.0);
+    fTexCoords = aTexCoords;
+    fTexId = aTexId;
+
+    gl_Position = pos;
 }
 
 #type fragment
 #version 330 core
 
-uniform float uTime;
-uniform sampler2D TEX_SAMPLER;
-
+in vec2 fPos;
 in vec4 fColor;
+in vec2 fTexCoords;
+in float fTexId;
+
+uniform sampler2D uTextures[8];
+uniform sampler2D uLightmap;
 
 out vec4 color;
 
 void main()
 {
-    color = fColor;
+    vec4 texColor;
+
+    switch (int(fTexId)) {
+        case 0:
+        texColor = fColor;
+        break;
+        case 1:
+        texColor = fColor * texture(uTextures[1], fTexCoords);
+        break;
+        case 2:
+        texColor = fColor * texture(uTextures[2], fTexCoords);
+        break;
+        case 3:
+        texColor = fColor * texture(uTextures[3], fTexCoords);
+        break;
+        case 4:
+        texColor = fColor * texture(uTextures[4], fTexCoords);
+        break;
+        case 5:
+        texColor = fColor * texture(uTextures[5], fTexCoords);
+        break;
+        case 6:
+        texColor = fColor * texture(uTextures[6], fTexCoords);
+        break;
+        case 7:
+        texColor = fColor * texture(uTextures[7], fTexCoords);
+        break;
+    }
+
+    //texColor *= texture(uLightmap, (fPos + 1)/2);
+    color = texColor;
+
+    /*
+    if(fTexId > 0) {
+        int id = int(fTexId);
+        color = fColor * texture[uTextures[id], fTexCoords];
+        //color = vec4(fTexCoords, 0, 1);
+    } else {
+        color = fColor;
+    }
+    */
 }

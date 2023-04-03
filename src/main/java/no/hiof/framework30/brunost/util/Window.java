@@ -1,5 +1,13 @@
 package no.hiof.framework30.brunost.util;
 
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.flag.ImGuiConfigFlags;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
+import no.hiof.framework30.brunost.ImGuiLayer;
+import org.lwjgl.glfw.Callbacks;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
@@ -24,6 +32,12 @@ public class Window {
     int width, height;
     String title;
     private long glfwWindow;
+    private ImGuiLayer imGuiLayer;
+
+    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
+    private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
+
+    private String glslVersion = null;
 
     private static Window window = null;
     private long audioContext;
@@ -33,10 +47,11 @@ public class Window {
     // Color values RGBA
     public float r = 0, b = 0, g = 0, a = 0;
 
-    private Window(){
+    private Window(ImGuiLayer imGuiLayer){
         this.width = 1920;
         this.height = 1080;
         this.title = "Brunost Engine";
+        this.imGuiLayer = imGuiLayer;
         r = 1;
         b = 1;
         g = 1;
@@ -63,7 +78,7 @@ public class Window {
 
     public static Window get(){
         if (Window.window == null){
-            Window.window = new Window();
+            Window.window = new Window(new ImGuiLayer());
         }
 
         return Window.window;
@@ -79,7 +94,7 @@ public class Window {
         init();
         loop();
 
-        //Destoy the audio context
+        //Destroy the audio context
         alcDestroyContext(audioContext);
         alcCloseDevice(audioDevice);
 
@@ -100,12 +115,17 @@ public class Window {
         if ( !glfwInit())
             throw new IllegalStateException("unable to initialize GLFW");
 
+
+        glslVersion = "#version 130";
         // Configure GLFW
         // Configure window hints, which helps us perform operations against windows
         glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
         // Create the window. Holds the address space for where the window is stored
         glfwWindow = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
@@ -117,6 +137,7 @@ public class Window {
         glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
         glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+
 
         // Make the OpenGL context current.
         glfwMakeContextCurrent(glfwWindow);
@@ -144,12 +165,19 @@ public class Window {
         // CRITICAL for LWJGL and GLFW's OpenGL context
         GL.createCapabilities();
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        initImGui();
+        imGuiGlfw.init(glfwWindow, true);
+        imGuiGl3.init(glslVersion);
+
+
         Window.changeScene(0);
     }
 
     public void loop(){
-        float beginTime = Time.getTime();
-        float endTime = Time.getTime();
+        float beginTime = (float)glfwGetTime();
+        float endTime;
         float deltaTime = -1.0f;
 
         while(!glfwWindowShouldClose(glfwWindow)){
@@ -164,12 +192,58 @@ public class Window {
             if(deltaTime >= 0)
                 currentScene.onUpdate(deltaTime);
 
+            imGuiGlfw.newFrame();
+            ImGui.newFrame();
 
+            imGuiLayer.imgui();
+
+            ImGui.render();
+            imGuiGl3.renderDrawData(ImGui.getDrawData());
+
+            if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+                final long backupWindowPtr = org.lwjgl.glfw.GLFW.glfwGetCurrentContext();
+                ImGui.updatePlatformWindows();
+                ImGui.renderPlatformWindowsDefault();
+                GLFW.glfwMakeContextCurrent(backupWindowPtr);
+            }
             glfwSwapBuffers(glfwWindow);
+            glfwPollEvents();
 
-            endTime = Time.getTime();
+            endTime = (float)glfwGetTime();
             deltaTime = endTime - beginTime;
             beginTime = endTime;
         }
+    }
+
+    public void destroy(){
+        imGuiGl3.dispose();
+        imGuiGlfw.dispose();
+        ImGui.destroyContext();
+        Callbacks.glfwFreeCallbacks(glfwWindow);
+        glfwDestroyWindow(glfwWindow);
+        glfwTerminate();
+    }
+
+    private void initImGui(){
+        ImGui.createContext();
+        ImGuiIO io = ImGui.getIO();
+        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+    }
+
+    public static int getWidth(){
+        return get().width;
+    }
+
+    public static int getHeight(){
+        return getHeight();
+    }
+
+
+    public void setWidth(int newWidth) {
+        get().width = newWidth;
+    }
+
+    public void setHeight(int newHeight) {
+        get().height = newHeight;
     }
 }
