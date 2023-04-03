@@ -168,6 +168,7 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         initImGui();
+        imGuiLayer.setupFont();
         imGuiGlfw.init(glfwWindow, true);
         imGuiGl3.init(glslVersion);
 
@@ -196,6 +197,7 @@ public class Window {
             ImGui.newFrame();
 
             imGuiLayer.imgui();
+            imGuiLayer.update(deltaTime, currentScene);
 
             ImGui.render();
             imGuiGl3.renderDrawData(ImGui.getDrawData());

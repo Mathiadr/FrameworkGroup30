@@ -1,7 +1,11 @@
 package no.hiof.framework30.brunost;
 
 
+import imgui.ImFontAtlas;
+import imgui.ImFontConfig;
 import imgui.ImGui;
+import imgui.ImGuiIO;
+import no.hiof.framework30.brunost.util.Scene;
 import no.hiof.framework30.brunost.util.Window;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -23,5 +27,35 @@ public class ImGuiLayer {
         }
 
         ImGui.end();
+    }
+
+    public void update(float deltaTime, Scene currentScene){
+
+        currentScene.sceneImgui();
+
+
+    }
+
+
+
+    public void setupFont(){
+        final ImGuiIO io = ImGui.getIO();
+        io.setIniFilename("imgui.ini");
+        ImFontAtlas fontAtlas = io.getFonts();
+        ImFontConfig fontConfig = new ImFontConfig(); // Natively allocated object, should be explicitly destroyed
+
+        fontConfig.setGlyphRanges(fontAtlas.getGlyphRangesDefault());
+
+
+        // Default font
+        // fontAtlas.addFontDefault();
+
+        // Fonts merge example
+        fontConfig.setPixelSnapH(true);
+        fontAtlas.addFontFromFileTTF("assets/fonts/Silkscreen/slkscr.ttf", 16, fontConfig);
+
+
+
+        fontConfig.destroy();
     }
 }

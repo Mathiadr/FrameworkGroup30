@@ -1,5 +1,6 @@
 package no.hiof.framework30.brunost.components;
 
+import imgui.ImGui;
 import no.hiof.framework30.brunost.Transform;
 import no.hiof.framework30.brunost.gameObjects.Component;
 import no.hiof.framework30.brunost.renderEngine.Texture;
@@ -42,6 +43,16 @@ public class SpriteRenderer extends Component {
             this.gameObject.transform.copy(this.lastTransform);
             isDirty = true;
         }
+    }
+
+    @Override
+    public void imgui() {
+        float[] imColor = {color.x, color.y, color.z, color.w};
+        if (ImGui.colorPicker4("Color Picker: ",imColor)){
+            this.color.set(imColor[0], imColor[1], imColor[2], imColor[3]);
+            this.isDirty = true;
+        }
+
     }
 
     public Vector4f getColor(){

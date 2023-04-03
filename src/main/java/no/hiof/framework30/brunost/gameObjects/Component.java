@@ -24,5 +24,11 @@ public abstract class Component {
      *
      * @param   deltaTime the speed at which the engine is being run in
      */
-    public abstract void onUpdate(float deltaTime);
+    public void onUpdate(float deltaTime){
+
+    }
+
+    public void imgui(){
+
+    }
 }

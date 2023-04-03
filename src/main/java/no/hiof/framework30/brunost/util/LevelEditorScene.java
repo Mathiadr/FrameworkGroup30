@@ -1,6 +1,8 @@
 package no.hiof.framework30.brunost.util;
 
 
+import imgui.ImGui;
+import no.hiof.framework30.brunost.ImGuiLayer;
 import no.hiof.framework30.brunost.Transform;
 import no.hiof.framework30.brunost.components.Sprite;
 import no.hiof.framework30.brunost.components.SpriteRenderer;
@@ -30,6 +32,7 @@ public class LevelEditorScene extends Scene {
                 new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 2);
         object1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
         this.addGameObjectToScene(object1);
+        this.activeGameObject = object1;
 
         GameObject object2 = new GameObject("Object 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)), -1);
         object2.addComponent(new SpriteRenderer(sprites.getSprite(6)));
@@ -68,5 +71,12 @@ public class LevelEditorScene extends Scene {
         }
 
         this.renderer.render();
+    }
+
+    @Override
+    public void imgui() {
+        ImGui.begin("Test");
+        ImGui.text("Text");
+        ImGui.end();
     }
 }

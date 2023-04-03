@@ -1,5 +1,6 @@
 package no.hiof.framework30.brunost.util;
 
+import imgui.ImGui;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
 import no.hiof.framework30.brunost.renderEngine.Renderer;
 import no.hiof.framework30.brunost.util.Camera;
@@ -25,6 +26,7 @@ public abstract class Scene {
     protected Camera camera;
     private boolean isRunning = false;
     protected List<GameObject> gameObjects = new ArrayList<>();
+    protected GameObject activeGameObject = null;
 
     public Scene(){
 
@@ -70,5 +72,19 @@ public abstract class Scene {
 
     public Camera camera(){
         return this.camera;
+    }
+
+    public void sceneImgui(){
+        if (activeGameObject != null){
+            ImGui.begin("Inspector");
+            activeGameObject.imgui();
+            ImGui.end();
+        }
+
+        imgui();
+    }
+
+    public void imgui(){
+
     }
 }
