@@ -51,6 +51,9 @@ dependencies {
 
     // IMGUI
     implementation "io.github.spair:imgui-java-app:1.81.0"
+
+    // GSON
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 test {
     useJUnitPlatform()

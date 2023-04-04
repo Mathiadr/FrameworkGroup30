@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AssetPool {
-    private static Map<String, Shader> shaders = new HashMap<>();
+    private static Map<String, Shader>  shaders = new HashMap<>();
     private static Map<String, Texture> textures = new HashMap<>();
     private static Map<String, SpriteSheet> spriteSheets = new HashMap<>();
 
@@ -30,7 +30,8 @@ public class AssetPool {
         if (AssetPool.textures.containsKey(file.getAbsolutePath())){
             return AssetPool.textures.get(file.getAbsolutePath());
         } else {
-            Texture texture = new Texture(resourceName);
+            Texture texture = new Texture();
+            texture.init(resourceName);
             AssetPool.textures.put(file.getAbsolutePath(), texture);
             return texture;
         }

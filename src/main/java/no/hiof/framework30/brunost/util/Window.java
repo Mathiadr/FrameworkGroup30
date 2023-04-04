@@ -5,7 +5,7 @@ import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import no.hiof.framework30.brunost.ImGuiLayer;
+import no.hiof.framework30.brunost.renderEngine.ImGuiLayer;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -62,18 +62,19 @@ public class Window {
         switch (newScene){
             case 0:
                 currentScene = new LevelEditorScene();
-                currentScene.init();
-                currentScene.onStart();
+
                 break;
             case 1:
                 currentScene = new LevelScene();
-                currentScene.init();
-                currentScene.onStart();
                 break;
             case 2:
                 assert false : "Unknown scene '" + newScene + "'";
                 break;
         }
+
+        currentScene.load();
+        currentScene.init();
+        currentScene.onStart();
     }
 
     public static Window get(){
@@ -181,6 +182,7 @@ public class Window {
         float endTime;
         float deltaTime = -1.0f;
 
+
         while(!glfwWindowShouldClose(glfwWindow)){
             // Poll events. Gets all key, mouse events.
             glfwPollEvents();
@@ -215,6 +217,8 @@ public class Window {
             deltaTime = endTime - beginTime;
             beginTime = endTime;
         }
+
+        currentScene.saveExit();
     }
 
     public void destroy(){
