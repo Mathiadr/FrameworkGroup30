@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
@@ -11,22 +12,33 @@ import static org.lwjgl.stb.STBImage.*;
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
 public class Texture {
     private String filepath;
-    private int texID;
+    private transient int texId;
     private int width, height;
 
-    /*
     public Texture(){
-
+        texId = -1;
+        width = -1;
+        height = -1;
     }
 
-     */
+    public Texture(int width, int height){
+        this.filepath = "Generated";
+
+        // Generate texture on GPU
+        texId = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texId);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+                0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+    }
 
     public void init(String filepath){
         this.filepath = filepath;
 
         // Generate texture on GPU
-        texID = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texID);
+        texId = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texId);
 
         // Set texture parameters
         // Repeat image in both directions
@@ -63,7 +75,7 @@ public class Texture {
     }
 
     public void bind(){
-        glBindTexture(GL_TEXTURE_2D, texID);
+        glBindTexture(GL_TEXTURE_2D, texId);
     }
 
     public void unbind(){
@@ -78,7 +90,23 @@ public class Texture {
         return height;
     }
 
-    public int getTexID() {
-        return texID;
+    public int getId() {
+        return texId;
+    }
+
+    public String getFilepath() {
+        return filepath;
+    }
+
+    // If all values are equal, the objects are the same.
+    @Override
+    public boolean equals(Object o){
+        if (o == null) return false;
+        if (!(o instanceof Texture)) return false;
+        Texture oTex = (Texture)o;
+        return oTex.getWidth() == this.width
+            && oTex.getHeight() == this.height
+            && oTex.getId() == this.texId
+            && Objects.equals(oTex.getFilepath(), this.filepath);
     }
 }

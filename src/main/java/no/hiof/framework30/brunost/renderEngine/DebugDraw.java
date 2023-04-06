@@ -1,6 +1,7 @@
 package no.hiof.framework30.brunost.renderEngine;
 
 import no.hiof.framework30.brunost.util.AssetPool;
+import no.hiof.framework30.brunost.util.JMath;
 import no.hiof.framework30.brunost.util.Window;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -44,7 +45,7 @@ public class DebugDraw {
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
         glEnableVertexAttribArray(1);
 
-        glLineWidth(2.0f);
+        glLineWidth(1.0f);
     }
 
     /**
@@ -123,4 +124,60 @@ public class DebugDraw {
         if (lines.size() >= MAX_LINES) return;
         DebugDraw.lines.add(new Line2D(from, to, color, lifetime));
     }
+
+    // Add Box2D methods
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation){
+        addBox2D(center, dimensions, rotation, new Vector3f(0, 1, 0), 1);
+    }
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation, Vector3f color){
+        addBox2D(center, dimensions, rotation, color, 1);
+    }
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation, Vector3f color, int lifetime){
+        // Bottom Left Corner
+        Vector2f min = new Vector2f(center).sub(new Vector2f(dimensions).mul(0.5f));
+        // Top right Corner
+        Vector2f max = new Vector2f(center).add(new Vector2f(dimensions)).mul(0.5f);
+
+        Vector2f[] vertices = {
+            new Vector2f(min.x, min.y), new Vector2f(min.x, max.y),
+            new Vector2f(max.x, max.y), new Vector2f(max.x, min.y)
+        };
+
+        // Rotation
+        if (rotation != 0.0f){
+            for(Vector2f vert : vertices)
+                JMath.rotate(vert, rotation, center);
+        }
+
+        // Draw lines from each corner to the other
+        // 0: Bottom left, 1: Top left, 2: Top right, 3: Bottom right
+        addLine2D(vertices[0], vertices[1], color, lifetime); // Bottom left -> Top left
+        addLine2D(vertices[0], vertices[3], color, lifetime); // Bottom left -> Bottom right
+        addLine2D(vertices[1], vertices[2], color, lifetime); // Top left    -> Top right
+        addLine2D(vertices[2], vertices[3], color, lifetime); // Top right   -> Bottom right
+    }
+
+    // Add Circle2D methods
+    public static void addCircle2D(Vector2f center, float radius){
+        addCircle2D(center, radius, new Vector3f(0, 1, 0), 1);
+    }
+    public static void addCircle2D(Vector2f center, float radius, Vector3f color){
+        addCircle2D(center, radius, color, 1);
+    }
+    public static void addCircle2D(Vector2f center, float radius, Vector3f color, int lifetime){
+        Vector2f[] points = new Vector2f[20]; // Segment length (Higher = more circular)
+        int increment = 360 / points.length;
+        int currentAngle = 0;
+        for (int i=0; i < points.length; i++){
+            Vector2f temp = new Vector2f(radius, 0);
+            JMath.rotate(temp, currentAngle, new Vector2f());
+            points[i] = new Vector2f(temp).add(center);
+
+            if (i > 0) addLine2D(points[i-1], points[i], color, lifetime);
+            currentAngle += increment;
+        }
+
+        addLine2D(points[points.length - 1], points[0], color, lifetime);
+    }
+
 }

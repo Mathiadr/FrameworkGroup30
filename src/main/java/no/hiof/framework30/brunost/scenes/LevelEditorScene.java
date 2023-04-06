@@ -22,7 +22,6 @@ public class LevelEditorScene extends Scene {
 
     private GameObject object1;
     private SpriteSheet spritesSpritesheet;
-    private List<Sprite> sprites;
 
     GameObject levelEditorStuff = new GameObject("levelEditor", new Transform(new Vector2f()), 0);
 
@@ -47,7 +46,8 @@ public class LevelEditorScene extends Scene {
 
 
         if (levelLoaded) {
-            this.activeGameObject = gameObjects.get(0);
+            if (gameObjects.size() > 0)
+                this.activeGameObject = gameObjects.get(0);
             return;
         }
         /*
@@ -76,15 +76,31 @@ public class LevelEditorScene extends Scene {
         AssetPool.addSpriteSheet("assets/images/spritesheet.png",
                 new SpriteSheet(AssetPool.getTexture("assets/images/spritesheet.png"),
                 1000, 1000, 8, 0));
+
+        // Avoids missing textures issues when it comes to saving textures
+        for (GameObject gameObject: gameObjects) {
+            if (gameObject.getComponent(SpriteRenderer.class) != null){
+                SpriteRenderer spriteRenderer = gameObject.getComponent(SpriteRenderer.class);
+                if (spriteRenderer.getTexture() != null)
+                    spriteRenderer.setTexture(AssetPool.getTexture(spriteRenderer.getTexture().getFilepath()));
+            }
+        }
     }
 
     private int spriteIndex = 0;
     private float spriteFlipTime = 0.1f;
     private float spriteFlipTimeLeft = 0.0f;
 
+    float x = 0.0f;
+    float y = 0.0f;
     @Override
     public void onUpdate(float deltaTime) {
         levelEditorStuff.onUpdate(deltaTime);
+        DebugDraw.addBox2D(new Vector2f(400, 200), new Vector2f(64, 32), 30, new Vector3f(0, 1, 0), 1);
+        DebugDraw.addCircle2D(new Vector2f(x, y), 64, new Vector3f(0,1,0), 1);
+        x += 50f * deltaTime;
+        y += 50f * deltaTime;
+
         /*
         spriteFlipTimeLeft -= deltaTime;
         if(spriteFlipTimeLeft <= 0){
@@ -105,43 +121,6 @@ public class LevelEditorScene extends Scene {
 
         this.renderer.render();
     }
-    /*
-    @Override
-    public void imgui() {
-        ImGui.begin("Sprites");
-        ImVec2 windowPos = new ImVec2();
-        ImGui.getWindowPos(windowPos);
-        ImVec2 windowSize = new ImVec2();
-        ImGui.getWindowSize(windowSize);
-        ImVec2 itemSpacing = new ImVec2();
-        ImGui.getStyle().getItemSpacing(itemSpacing);
-
-        float windowX2 = windowPos.x + windowSize.x;
-        for(int i = 0; i < sprites.size(); i++ ){
-            Sprite sprite = sprites.get(i);
-            float spriteWidth = sprite.getWidth() * 4;
-            float spriteHeight = sprite.getHeight() * 4;
-            int id = sprite.getTexId();
-            Vector2f[] texCoords = sprite.getTexCoords();
-
-            ImGui.pushID(i);
-            if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[0].x,texCoords[0].y, texCoords[2].x, texCoords[2].y)){
-                System.out.println("Button " + i + " Clicked");
-            }
-            ImGui.popID();
-
-            ImVec2 lastButtonPos = new ImVec2();
-            ImGui.getItemRectMax(lastButtonPos);
-            float  lastButtonX2 = lastButtonPos.x;
-            float  nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
-            if (i+1 < sprites.size() && nextButtonX2 < windowX2)
-                ImGui.sameLine();
-        }
-
-        ImGui.end();
-    }
-
-     */
 
     @Override
     public void imgui() {

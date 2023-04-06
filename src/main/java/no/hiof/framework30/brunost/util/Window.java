@@ -1,16 +1,15 @@
 package no.hiof.framework30.brunost.util;
 
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import no.hiof.framework30.brunost.renderEngine.DebugDraw;
+import no.hiof.framework30.brunost.renderEngine.Framebuffer;
 import no.hiof.framework30.brunost.renderEngine.ImGuiLayer;
 import no.hiof.framework30.brunost.scenes.LevelEditorScene;
 import no.hiof.framework30.brunost.scenes.LevelScene;
 import no.hiof.framework30.brunost.scenes.Scene;
-import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.openal.AL;
@@ -37,11 +36,7 @@ public class Window {
     String title;
     private long glfwWindow;
     private ImGuiLayer imGuiLayer;
-
-    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
-    private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
-
-    private String glslVersion = null;
+    private Framebuffer framebuffer;
 
     private static Window window = null;
     private long audioContext;
@@ -51,11 +46,11 @@ public class Window {
     // Color values RGBA
     public float r = 0, b = 0, g = 0, a = 0;
 
-    private Window(ImGuiLayer imGuiLayer){
+    private Window(ImGuiLayer layer){
         this.width = 1920;
         this.height = 1080;
         this.title = "Brunost Engine";
-        this.imGuiLayer = imGuiLayer;
+        this.imGuiLayer = layer;
         r = 1;
         b = 1;
         g = 1;
@@ -96,7 +91,8 @@ public class Window {
     public void run(){
         System.out.println("Hello World!");
 
-        init();
+        initWindow();
+        imGuiLayer.init(glfwWindow);
         loop();
 
         //Destroy the audio context
@@ -112,7 +108,7 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    public void init(){
+    public void initWindow(){
         // Setup error callback. As in WHERE the framework will print to when errors occur.
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -121,8 +117,9 @@ public class Window {
             throw new IllegalStateException("unable to initialize GLFW");
 
 
-        glslVersion = "#version 130";
+
         // Configure GLFW
+        imGuiLayer.setGlslVersion("#version 130");
         // Configure window hints, which helps us perform operations against windows
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -172,11 +169,8 @@ public class Window {
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        initImGui();
-        imGuiLayer.setupFont();
-        imGuiGlfw.init(glfwWindow, true);
-        imGuiGl3.init(glslVersion);
 
+        this.framebuffer = new Framebuffer(1920, 1080);
 
         Window.changeScene(0);
     }
@@ -198,25 +192,16 @@ public class Window {
             // Tells OpenGL how to buffer. Sets the clear color(above) to flush our entire screen.
             glClear(GL_COLOR_BUFFER_BIT);
 
+            //this.framebuffer.bind();
             if(deltaTime >= 0) {
                 DebugDraw.draw();
                 currentScene.onUpdate(deltaTime);
             }
-            imGuiGlfw.newFrame();
-            ImGui.newFrame();
+            this.framebuffer.unbind();
 
-            imGuiLayer.imgui();
             imGuiLayer.onUpdate(deltaTime, currentScene);
 
-            ImGui.render();
-            imGuiGl3.renderDrawData(ImGui.getDrawData());
 
-            if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-                final long backupWindowPtr = org.lwjgl.glfw.GLFW.glfwGetCurrentContext();
-                ImGui.updatePlatformWindows();
-                ImGui.renderPlatformWindowsDefault();
-                GLFW.glfwMakeContextCurrent(backupWindowPtr);
-            }
             glfwSwapBuffers(glfwWindow);
             glfwPollEvents();
 
@@ -229,18 +214,7 @@ public class Window {
     }
 
     public void destroy(){
-        imGuiGl3.dispose();
-        imGuiGlfw.dispose();
-        ImGui.destroyContext();
-        Callbacks.glfwFreeCallbacks(glfwWindow);
-        glfwDestroyWindow(glfwWindow);
-        glfwTerminate();
-    }
-
-    private void initImGui(){
-        ImGui.createContext();
-        ImGuiIO io = ImGui.getIO();
-        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+        imGuiLayer.destroy();
     }
 
     public static int getWidth(){
