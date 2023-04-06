@@ -2,7 +2,6 @@ package no.hiof.framework30.brunost.components;
 
 import imgui.ImGui;
 import no.hiof.framework30.brunost.Transform;
-import no.hiof.framework30.brunost.gameObjects.Component;
 import no.hiof.framework30.brunost.renderEngine.Texture;
 import org.joml.Vector2f;
 import org.joml.Vector4f;

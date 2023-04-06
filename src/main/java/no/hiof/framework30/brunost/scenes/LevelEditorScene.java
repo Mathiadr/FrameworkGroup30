@@ -1,14 +1,19 @@
-package no.hiof.framework30.brunost.util;
+package no.hiof.framework30.brunost.scenes;
 
 
 import imgui.ImGui;
 import imgui.ImVec2;
+import no.hiof.framework30.brunost.MouseControls;
+import no.hiof.framework30.brunost.Prefab;
 import no.hiof.framework30.brunost.Transform;
 import no.hiof.framework30.brunost.components.*;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
+import no.hiof.framework30.brunost.renderEngine.DebugDraw;
+import no.hiof.framework30.brunost.util.AssetPool;
+import no.hiof.framework30.brunost.util.Camera;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,15 +24,21 @@ public class LevelEditorScene extends Scene {
     private SpriteSheet spritesSpritesheet;
     private List<Sprite> sprites;
 
+    GameObject levelEditorStuff = new GameObject("levelEditor", new Transform(new Vector2f()), 0);
+
 
     public LevelEditorScene () {
     }
 
     @Override
     public void init(){
+        levelEditorStuff.addComponent(new MouseControls());
+        levelEditorStuff.addComponent(new GridLines());
+
         loadResources();
         this.camera = new Camera(new Vector2f(-250, 0));
         spritesSpritesheet = AssetPool.getSpriteSheet("assets/images/spritesheet.png");
+
         //sprites = new ArrayList<>();
         //Sprite newSprite = new Sprite();
         //newSprite.setTexture(AssetPool.getTexture("Assets/images/grassTile.png"));
@@ -39,7 +50,7 @@ public class LevelEditorScene extends Scene {
             this.activeGameObject = gameObjects.get(0);
             return;
         }
-
+        /*
 
         object1 = new GameObject("Object 1",
                 new Transform(new Vector2f(100, 100), new Vector2f(256, 256)), 2);
@@ -57,9 +68,7 @@ public class LevelEditorScene extends Scene {
         obj2SpriteRenderer.setSprite(obj2Sprite);
         object2.addComponent(obj2SpriteRenderer);
         this.addGameObjectToScene(object2);
-
-
-        //loadResources();
+        */
     }
 
     private void loadResources(){
@@ -75,7 +84,8 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void onUpdate(float deltaTime) {
-
+        levelEditorStuff.onUpdate(deltaTime);
+        /*
         spriteFlipTimeLeft -= deltaTime;
         if(spriteFlipTimeLeft <= 0){
             spriteFlipTimeLeft = spriteFlipTime;
@@ -85,7 +95,7 @@ public class LevelEditorScene extends Scene {
             }
             this.activeGameObject.getComponent(SpriteRenderer.class).setSprite(spritesSpritesheet.getSprite(spriteIndex));
         }
-
+        */
 
 
         //System.out.println("FPS : " + (1.0f / deltaTime));
@@ -146,14 +156,16 @@ public class LevelEditorScene extends Scene {
         float windowX2 = windowPos.x + windowSize.x;
         for(int i = 0; i < spritesSpritesheet.size(); i++ ){
             Sprite sprite = spritesSpritesheet.getSprite(i);
-            float spriteWidth = sprite.getWidth() / 4;
-            float spriteHeight = sprite.getHeight() / 4;
+            float spriteWidth = sprite.getWidth() / 6;
+            float spriteHeight = sprite.getHeight() / 6;
             int id = sprite.getTexId();
             Vector2f[] texCoords = sprite.getTexCoords();
 
             ImGui.pushID(i);
             if(ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)){
-                System.out.println("Button " + i + " Clicked");
+                GameObject object = Prefab.generateSpriteObject(sprite, 32*2, 32*2);
+                // Attach to mouse cursor
+                levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }
             ImGui.popID();
 

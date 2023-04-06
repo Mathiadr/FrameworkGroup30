@@ -1,6 +1,5 @@
 package no.hiof.framework30.brunost.components;
 
-import no.hiof.framework30.brunost.gameObjects.Component;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 

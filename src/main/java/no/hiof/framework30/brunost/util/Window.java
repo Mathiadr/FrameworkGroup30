@@ -5,7 +5,11 @@ import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import no.hiof.framework30.brunost.renderEngine.DebugDraw;
 import no.hiof.framework30.brunost.renderEngine.ImGuiLayer;
+import no.hiof.framework30.brunost.scenes.LevelEditorScene;
+import no.hiof.framework30.brunost.scenes.LevelScene;
+import no.hiof.framework30.brunost.scenes.Scene;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -187,19 +191,22 @@ public class Window {
             // Poll events. Gets all key, mouse events.
             glfwPollEvents();
 
+            DebugDraw.beginFrame();
+
             // Sets Clear Color to white
             glClearColor(r, g,b, a);
             // Tells OpenGL how to buffer. Sets the clear color(above) to flush our entire screen.
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if(deltaTime >= 0)
+            if(deltaTime >= 0) {
+                DebugDraw.draw();
                 currentScene.onUpdate(deltaTime);
-
+            }
             imGuiGlfw.newFrame();
             ImGui.newFrame();
 
             imGuiLayer.imgui();
-            imGuiLayer.update(deltaTime, currentScene);
+            imGuiLayer.onUpdate(deltaTime, currentScene);
 
             ImGui.render();
             imGuiGl3.renderDrawData(ImGui.getDrawData());
@@ -241,7 +248,7 @@ public class Window {
     }
 
     public static int getHeight(){
-        return getHeight();
+        return get().height;
     }
 
 

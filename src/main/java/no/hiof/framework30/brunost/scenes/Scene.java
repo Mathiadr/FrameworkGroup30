@@ -1,11 +1,11 @@
-package no.hiof.framework30.brunost.util;
+package no.hiof.framework30.brunost.scenes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import imgui.ImGui;
 import no.hiof.framework30.brunost.components.ComponentDeserializer;
 import no.hiof.framework30.brunost.components.GameObjectDeserializer;
-import no.hiof.framework30.brunost.gameObjects.Component;
+import no.hiof.framework30.brunost.components.Component;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
 import no.hiof.framework30.brunost.renderEngine.Renderer;
 import no.hiof.framework30.brunost.util.Camera;
@@ -128,10 +128,24 @@ public abstract class Scene {
             e.printStackTrace();
         }
         if (!inFile.equals("")) {
+            int maxGameObjectId = -1;
+            int maxCompId = -1;
             GameObject[] gameObjectsArray = gson.fromJson(inFile, GameObject[].class);
             for (int i=0; i < gameObjectsArray.length; i++){
                 addGameObjectToScene(gameObjectsArray[i]);
+
+                for (Component component : gameObjectsArray[i].getAllComponents()){
+                    if (component.getUid() > maxCompId)
+                        maxCompId = component.getUid();
+                }
+                if (gameObjectsArray[i].getUid() > maxGameObjectId)
+                    maxGameObjectId = gameObjectsArray[i].getUid();
             }
+
+            maxGameObjectId++;
+            maxCompId++;
+            GameObject.init(maxGameObjectId++);
+            Component.init(maxCompId++);
             this.levelLoaded = true;
         }
     }

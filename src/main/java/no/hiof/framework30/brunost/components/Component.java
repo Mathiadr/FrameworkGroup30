@@ -1,10 +1,11 @@
-package no.hiof.framework30.brunost.gameObjects;
+package no.hiof.framework30.brunost.components;
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
 
 import imgui.ImGui;
 import no.hiof.framework30.brunost.components.Tile;
 import no.hiof.framework30.brunost.components.Tileset;
+import no.hiof.framework30.brunost.gameObjects.GameObject;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -16,6 +17,8 @@ import java.lang.reflect.Modifier;
  * Components are what the GameObject objects can use to gain additional important functionality at compile time or in runtime.
  */
 public abstract class Component {
+    private static int ID_COUNTER = 0;
+    private  int uid = -1;
 
     public transient GameObject gameObject = null;
 
@@ -82,5 +85,19 @@ public abstract class Component {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public void generateId(){
+        if (this.uid == -1)
+            this.uid = ID_COUNTER++;
+
+    }
+
+    public int getUid(){
+        return this.uid;
+    }
+
+    public static void init(int maxId){
+        ID_COUNTER = maxId;
     }
 }

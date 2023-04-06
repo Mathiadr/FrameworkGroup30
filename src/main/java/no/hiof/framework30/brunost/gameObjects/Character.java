@@ -1,11 +1,8 @@
 package no.hiof.framework30.brunost.gameObjects;
 
-public abstract class Character extends GameObject{
+public abstract class Character{
 
     String name;
     int health;
 
-    public Character(String name) {
-        super(name);
-    }
 }

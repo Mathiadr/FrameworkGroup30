@@ -5,10 +5,7 @@ import imgui.ImFontAtlas;
 import imgui.ImFontConfig;
 import imgui.ImGui;
 import imgui.ImGuiIO;
-import no.hiof.framework30.brunost.util.Scene;
-import no.hiof.framework30.brunost.util.Window;
-
-import static org.lwjgl.glfw.GLFW.*;
+import no.hiof.framework30.brunost.scenes.Scene;
 
 public class ImGuiLayer {
     private boolean showText = false;
@@ -29,11 +26,8 @@ public class ImGuiLayer {
         ImGui.end();
     }
 
-    public void update(float deltaTime, Scene currentScene){
-
+    public void onUpdate(float deltaTime, Scene currentScene){
         currentScene.sceneImgui();
-
-
     }
 
 
