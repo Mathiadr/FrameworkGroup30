@@ -1,6 +1,7 @@
 package no.hiof.framework30.brunost.components;
 
 import no.hiof.framework30.brunost.renderEngine.DebugDraw;
+import no.hiof.framework30.brunost.util.Camera;
 import no.hiof.framework30.brunost.util.Settings;
 import no.hiof.framework30.brunost.util.Window;
 import org.joml.Vector2f;
@@ -10,17 +11,18 @@ public class GridLines extends Component{
 
     @Override
     public void onUpdate(float deltaTime) {
-        Vector2f cameraPos = Window.getScene().camera().position;
-        Vector2f projectionSize = Window.getScene().camera().getProjectionSize();
+        Camera camera = Window.getScene().camera();
+        Vector2f cameraPos = camera.position;
+        Vector2f projectionSize = camera.getProjectionSize();
 
-        int firstX = ((int)(cameraPos.x / Settings.GRID_WIDTH) - 1) * Settings.GRID_WIDTH;
+        int firstX = ((int)(cameraPos.x / Settings.GRID_WIDTH) - 1) * Settings.GRID_HEIGHT;
         int firstY = ((int)(cameraPos.y / Settings.GRID_HEIGHT) - 1) * Settings.GRID_HEIGHT;
 
-        int numVerticalLines = (int)(projectionSize.x / Settings.GRID_WIDTH) + 2;
-        int numHorizontalLines = (int)(projectionSize.y / Settings.GRID_HEIGHT) + 2;
+        int numVerticalLines    = (int)(projectionSize.x * camera.getZoom() / Settings.GRID_WIDTH) + 2;
+        int numHorizontalLines  = (int)(projectionSize.y * camera.getZoom() / Settings.GRID_HEIGHT) + 2;
 
-        int width = (int)projectionSize.x + Settings.GRID_WIDTH * 2;
-        int height = (int)projectionSize.y + Settings.GRID_HEIGHT * 2;
+        int width = (int)(projectionSize.x * camera.getZoom()) + Settings.GRID_WIDTH * 2;
+        int height = (int)(projectionSize.y * camera.getZoom()) + Settings.GRID_HEIGHT * 2;
 
         int maxLines = Math.max(numVerticalLines, numHorizontalLines);
         Vector3f color = new Vector3f(0.2f, 0.2f, 0.2f);

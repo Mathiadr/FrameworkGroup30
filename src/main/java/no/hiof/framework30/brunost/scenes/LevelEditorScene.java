@@ -11,10 +11,9 @@ import no.hiof.framework30.brunost.gameObjects.GameObject;
 import no.hiof.framework30.brunost.renderEngine.DebugDraw;
 import no.hiof.framework30.brunost.util.AssetPool;
 import no.hiof.framework30.brunost.util.Camera;
+import no.hiof.framework30.brunost.util.EditorCamera;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
@@ -31,11 +30,12 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init(){
+        this.camera = new Camera(new Vector2f(-250, 0));
         levelEditorStuff.addComponent(new MouseControls());
         levelEditorStuff.addComponent(new GridLines());
+        levelEditorStuff.addComponent(new EditorCamera(this.camera));
 
         loadResources();
-        this.camera = new Camera(new Vector2f(-250, 0));
         spritesSpritesheet = AssetPool.getSpriteSheet("assets/images/spritesheet.png");
 
         //sprites = new ArrayList<>();
@@ -96,6 +96,9 @@ public class LevelEditorScene extends Scene {
     @Override
     public void onUpdate(float deltaTime) {
         levelEditorStuff.onUpdate(deltaTime);
+        this.camera.adjustProjection();
+
+
         DebugDraw.addBox2D(new Vector2f(400, 200), new Vector2f(64, 32), 30, new Vector3f(0, 1, 0), 1);
         DebugDraw.addCircle2D(new Vector2f(x, y), 64, new Vector3f(0,1,0), 1);
         x += 50f * deltaTime;
@@ -135,6 +138,7 @@ public class LevelEditorScene extends Scene {
         float windowX2 = windowPos.x + windowSize.x;
         for(int i = 0; i < spritesSpritesheet.size(); i++ ){
             Sprite sprite = spritesSpritesheet.getSprite(i);
+            // TODO: Change these
             float spriteWidth = sprite.getWidth() / 6;
             float spriteHeight = sprite.getHeight() / 6;
             int id = sprite.getTexId();
@@ -142,7 +146,7 @@ public class LevelEditorScene extends Scene {
 
             ImGui.pushID(i);
             if(ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)){
-                GameObject object = Prefab.generateSpriteObject(sprite, 32*2, 32*2);
+                GameObject object = Prefab.generateSpriteObject(sprite, 32*3, 32*3);
                 // Attach to mouse cursor
                 levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }

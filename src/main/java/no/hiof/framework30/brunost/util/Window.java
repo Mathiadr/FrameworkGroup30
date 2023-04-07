@@ -18,6 +18,8 @@ import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 
+import java.awt.*;
+
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -119,7 +121,7 @@ public class Window {
 
 
         // Configure GLFW
-        imGuiLayer.setGlslVersion("#version 130");
+        imGuiLayer.setGlslVersion("#version 330");
         // Configure window hints, which helps us perform operations against windows
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -127,7 +129,7 @@ public class Window {
 
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
         // Create the window. Holds the address space for where the window is stored
         glfwWindow = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
@@ -171,6 +173,7 @@ public class Window {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         this.framebuffer = new Framebuffer(1920, 1080);
+        glViewport(0,0, 1920, 1080);
 
         Window.changeScene(0);
     }
@@ -187,12 +190,12 @@ public class Window {
 
             DebugDraw.beginFrame();
 
+            this.framebuffer.bind();
             // Sets Clear Color to white
             glClearColor(r, g,b, a);
             // Tells OpenGL how to buffer. Sets the clear color(above) to flush our entire screen.
             glClear(GL_COLOR_BUFFER_BIT);
 
-            //this.framebuffer.bind();
             if(deltaTime >= 0) {
                 DebugDraw.draw();
                 currentScene.onUpdate(deltaTime);
@@ -200,10 +203,8 @@ public class Window {
             this.framebuffer.unbind();
 
             imGuiLayer.onUpdate(deltaTime, currentScene);
-
-
             glfwSwapBuffers(glfwWindow);
-            glfwPollEvents();
+            MouseListener.endFrame();
 
             endTime = (float)glfwGetTime();
             deltaTime = endTime - beginTime;
@@ -232,5 +233,13 @@ public class Window {
 
     public void setHeight(int newHeight) {
         get().height = newHeight;
+    }
+
+    public static Framebuffer getFramebuffer(){
+        return get().framebuffer;
+    }
+
+    public static float getTargetAspectRatio(){
+        return 16.0f / 9.0f;
     }
 }

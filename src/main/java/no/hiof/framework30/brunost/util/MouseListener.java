@@ -2,6 +2,8 @@ package no.hiof.framework30.brunost.util;
 
 // Callbacks: https://www.glfw.org/docs/3.3/input_guide.html#input_mouse
 
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
@@ -15,6 +17,9 @@ public class MouseListener {
 
     private boolean mouseButtonPressed[] = new boolean[3];
     private boolean isDragging;
+
+    private Vector2f gameViewPos = new Vector2f();
+    private Vector2f gameViewSize = new Vector2f();
 
     private MouseListener(){
         this.scrollX = 0.0;
@@ -73,23 +78,46 @@ public class MouseListener {
     }
 
     public static float getOrthoX(){
-        float currentX = getX();
-        currentX = (currentX/(float)Window.getWidth()) * 2.0f - 1.0f;
+        float currentX = getX() - get().gameViewPos.x;
+        currentX = (currentX/ get().gameViewSize.x) * 2.0f - 1.0f;
         Vector4f tmp = new Vector4f(currentX, 0, 0, 1);
-        tmp.mul(Window.getScene().camera().getInverseProjection()).mul(Window.getScene().camera().getInverseView());
+
+        Camera camera = Window.getScene().camera();
+        Matrix4f viewProjection = new Matrix4f();
+        camera.getInverseView().mul(camera.getInverseProjection(), viewProjection);
+        tmp.mul(viewProjection);
         currentX = tmp.x;
 
         return currentX;
     }
 
     public static float getOrthoY(){
-        float currentY = Window.getHeight() - getY();
-        currentY = (currentY/(float)Window.getHeight()) * 2.0f - 1.0f;
+        float currentY = getY() - get().gameViewPos.y;
+        currentY = -((currentY/get().gameViewSize.y) * 2.0f - 1.0f);
         Vector4f tmp = new Vector4f(0, currentY, 0, 1);
-        tmp.mul(Window.getScene().camera().getInverseProjection()).mul(Window.getScene().camera().getInverseView());
+
+        Camera camera = Window.getScene().camera();
+        Matrix4f viewProjection = new Matrix4f();
+        camera.getInverseView().mul(camera.getInverseProjection(), viewProjection);
+        tmp.mul(viewProjection);
         currentY = tmp.y;
 
         return currentY;
+    }
+
+    public static boolean mouseButtonDown(int button){
+        if(button < get().mouseButtonPressed.length)
+            return get().mouseButtonPressed[button];
+        else
+            return false;
+    }
+
+    public static void setGameViewPos(Vector2f gameViewPos) {
+        get().gameViewPos.set(gameViewPos);
+    }
+
+    public static void setGameViewSize(Vector2f gameViewSize) {
+        get().gameViewSize.set(gameViewSize);
     }
 
     public static float getDeltaX(){
@@ -112,10 +140,4 @@ public class MouseListener {
         return get().isDragging;
     }
 
-    public static boolean mouseButtonDown(int button){
-        if(button < get().mouseButtonPressed.length)
-            return get().mouseButtonPressed[button];
-        else
-            return false;
-    }
 }

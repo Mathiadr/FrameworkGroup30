@@ -8,4 +8,5 @@ package no.hiof.framework30.brunost.components;
  * @see Tileset
  */
 public class Tile {
+
 }

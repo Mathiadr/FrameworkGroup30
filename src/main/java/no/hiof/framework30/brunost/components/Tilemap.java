@@ -9,4 +9,19 @@ package no.hiof.framework30.brunost.components;
  * @see Tile
  */
 public class Tilemap {
+    private Tile[][] tiles;
+    private int size;
+
+    public Tilemap(int height, int width){
+        this.tiles = new Tile[height][width];
+        for (int i = 0; i < height; i++){
+            for (int j = 0; j < width; j++){
+                tiles[i][j] = new Tile();
+            }
+        }
+    }
+
+    public Tile[][] getTiles() {
+        return tiles;
+    }
 }
