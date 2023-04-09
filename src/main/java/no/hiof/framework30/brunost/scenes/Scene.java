@@ -3,6 +3,7 @@ package no.hiof.framework30.brunost.scenes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import imgui.ImGui;
+import no.hiof.framework30.brunost.Transform;
 import no.hiof.framework30.brunost.components.ComponentDeserializer;
 import no.hiof.framework30.brunost.components.GameObjectDeserializer;
 import no.hiof.framework30.brunost.components.Component;
@@ -96,6 +97,13 @@ public abstract class Scene {
 
     public void imgui(){
 
+    }
+
+    public GameObject createGameObject(String name){
+        GameObject gameObject = new GameObject(name);
+        gameObject.addComponent(new Transform());
+        gameObject.transform = gameObject.getComponent(Transform.class);
+        return gameObject;
     }
 
     public void saveExit(){

@@ -1,5 +1,6 @@
 package no.hiof.framework30.brunost;
 
+import no.hiof.framework30.brunost.components.Component;
 import org.joml.Vector2f;
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
@@ -8,10 +9,12 @@ import org.joml.Vector2f;
  * The 2D properties of the object in position and scale.
  * @see no.hiof.framework30.brunost.gameObjects.GameObject
  */
-public class Transform {
+public class Transform extends Component {
 
     public Vector2f position;
     public Vector2f scale;
+    public float rotation = 0.0f;
+    public int zIndex;
 
     public Transform() {
         init(new Vector2f(), new Vector2f());
@@ -26,6 +29,7 @@ public class Transform {
     public void init(Vector2f position, Vector2f scale){
         this.position =  position;
         this.scale = scale;
+        this.zIndex = 0;
     }
 
     public Transform copy(){

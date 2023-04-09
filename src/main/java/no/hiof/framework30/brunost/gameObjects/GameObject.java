@@ -20,15 +20,11 @@ public class GameObject {
 
     private String name;
     private List<Component> components;
-    public Transform transform;
-    public int zIndex;
+    public transient Transform transform;
 
-    public GameObject(String name, Transform transform, int zIndex){
+    public GameObject(String name){
         this.name = name;
-        this.zIndex = zIndex;
         this.components = new ArrayList<>();
-        this.transform = transform;
-
         this.uid = ID_COUNTER++;
     }
 
@@ -110,10 +106,6 @@ public class GameObject {
         for (Component component : components){
             component.imgui();
         }
-    }
-
-    public int zIndex(){
-        return this.zIndex;
     }
 
     public static void init(int maxId){
