@@ -1,7 +1,14 @@
 package no.hiof.framework30.brunost.gameObjects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import imgui.ImGui;
 import no.hiof.framework30.brunost.Transform;
 import no.hiof.framework30.brunost.components.Component;
+import no.hiof.framework30.brunost.components.ComponentDeserializer;
+import no.hiof.framework30.brunost.components.GameObjectDeserializer;
+import no.hiof.framework30.brunost.components.SpriteRenderer;
+import no.hiof.framework30.brunost.util.AssetPool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +28,8 @@ public class GameObject {
     private String name;
     private List<Component> components;
     public transient Transform transform;
+    private boolean doSerialization = true;
+    private boolean isDead = false;
 
     public GameObject(String name){
         this.name = name;
@@ -92,6 +101,11 @@ public class GameObject {
         }
     }
 
+    public void editorUpdate(float deltaTime){
+        for (int i=0; i < components.size(); i++)
+            components.get(i).editorUpdate(deltaTime);
+    }
+
     /**
      * Accesses each of the components' onStart method.
      * This method runs at the first frame.
@@ -104,8 +118,38 @@ public class GameObject {
 
     public void imgui(){
         for (Component component : components){
-            component.imgui();
+            if (ImGui.collapsingHeader(component.getClass().getSimpleName()))
+                component.imgui();
         }
+    }
+
+    public void destroy(){
+        this.isDead = true;
+        for (int i=0; i < components.size(); i++)
+            components.get(i).destroy();
+    }
+
+    public GameObject copy(){
+        // TODO: come up with cleaner solution
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Component.class, new ComponentDeserializer())
+                .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
+                .enableComplexMapKeySerialization()
+                .create();
+        String objAsJson = gson.toJson(this);
+        GameObject obj = gson.fromJson(objAsJson, GameObject.class);
+
+        obj.generateUid();
+        for (Component c : obj.getAllComponents()) {
+            c.generateId();
+        }
+
+        SpriteRenderer sprite = obj.getComponent(SpriteRenderer.class);
+        if (sprite != null && sprite.getTexture() != null) {
+            sprite.setTexture(AssetPool.getTexture(sprite.getTexture().getFilepath()));
+        }
+
+        return obj;
     }
 
     public static void init(int maxId){
@@ -116,7 +160,27 @@ public class GameObject {
         return this.uid;
     }
 
+    public void generateUid(){
+        this.uid = ID_COUNTER++;
+    }
+
     public List<Component> getAllComponents(){
         return this.components;
+    }
+
+    public boolean doSerialization() {
+        return this.doSerialization;
+    }
+
+    public void setNoSerialization() {
+        this.doSerialization = false;
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
     }
 }

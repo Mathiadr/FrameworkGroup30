@@ -21,7 +21,7 @@ public class MouseControls extends Component {
     }
 
     @Override
-    public void onUpdate(float deltaTime){
+    public void editorUpdate(float deltaTime){
         if (holdingObject != null){
             holdingObject.transform.position.x = MouseListener.getOrthoX();
             holdingObject.transform.position.y = MouseListener.getOrthoY();

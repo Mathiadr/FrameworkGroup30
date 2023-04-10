@@ -1,24 +1,20 @@
 package no.hiof.framework30.brunost.util;
 
-import imgui.ImGui;
-import imgui.flag.ImGuiConfigFlags;
-import imgui.gl3.ImGuiImplGl3;
-import imgui.glfw.ImGuiImplGlfw;
-import no.hiof.framework30.brunost.renderEngine.DebugDraw;
-import no.hiof.framework30.brunost.renderEngine.Framebuffer;
-import no.hiof.framework30.brunost.renderEngine.ImGuiLayer;
-import no.hiof.framework30.brunost.scenes.LevelEditorScene;
-import no.hiof.framework30.brunost.scenes.LevelScene;
+import no.hiof.framework30.brunost.gameObjects.GameObject;
+import no.hiof.framework30.brunost.observers.EventSystem;
+import no.hiof.framework30.brunost.observers.Observer;
+import no.hiof.framework30.brunost.observers.events.Event;
+import no.hiof.framework30.brunost.observers.events.EventType;
+import no.hiof.framework30.brunost.renderEngine.*;
+import no.hiof.framework30.brunost.scenes.LevelEditorSceneInitializer;
 import no.hiof.framework30.brunost.scenes.Scene;
-import org.lwjgl.glfw.GLFW;
+import no.hiof.framework30.brunost.scenes.SceneInitializer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
-
-import java.awt.*;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -33,12 +29,14 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 /**
  * Represents the Window the game is to be run inside.
  */
-public class Window {
-    int width, height;
-    String title;
+public class Window implements Observer {
+    private int width, height;
+    private String title;
     private long glfwWindow;
-    private ImGuiLayer imGuiLayer;
+    private ImGuiLayer imguiLayer;
     private Framebuffer framebuffer;
+    private PickingTexture pickingTexture;
+    private boolean editorMode = true;
 
     private static Window window = null;
     private long audioContext;
@@ -46,33 +44,22 @@ public class Window {
 
     private static Scene currentScene;
     // Color values RGBA
-    public float r = 0, b = 0, g = 0, a = 0;
 
-    private Window(ImGuiLayer layer){
+    private Window(){
         this.width = 1920;
         this.height = 1080;
         this.title = "Brunost Engine";
-        this.imGuiLayer = layer;
-        r = 1;
-        b = 1;
-        g = 1;
-        a = 1;
+        EventSystem.addObserver(this);
     }
 
-    public static void changeScene(int newScene){
-        switch (newScene){
-            case 0:
-                currentScene = new LevelEditorScene();
-
-                break;
-            case 1:
-                currentScene = new LevelScene();
-                break;
-            case 2:
-                assert false : "Unknown scene '" + newScene + "'";
-                break;
+    public static void changeScene(SceneInitializer sceneInitializer){
+        if (currentScene != null){
+            currentScene.destroy();
         }
 
+
+        getImguiLayer().getPropertiesWindow().setActiveGameObject(null);
+        currentScene = new Scene(sceneInitializer);
         currentScene.load();
         currentScene.init();
         currentScene.onStart();
@@ -80,7 +67,7 @@ public class Window {
 
     public static Window get(){
         if (Window.window == null){
-            Window.window = new Window(new ImGuiLayer());
+            Window.window = new Window();
         }
 
         return Window.window;
@@ -94,7 +81,6 @@ public class Window {
         System.out.println("Hello World!");
 
         initWindow();
-        imGuiLayer.init(glfwWindow);
         loop();
 
         //Destroy the audio context
@@ -118,10 +104,6 @@ public class Window {
         if ( !glfwInit())
             throw new IllegalStateException("unable to initialize GLFW");
 
-
-
-        // Configure GLFW
-        imGuiLayer.setGlslVersion("#version 330");
         // Configure window hints, which helps us perform operations against windows
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -141,6 +123,10 @@ public class Window {
         glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
         glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+        glfwSetWindowSizeCallback(glfwWindow, (w, newWidth, newHeight) -> {
+           Window.setWidth(newWidth);
+           Window.setHeight(newHeight);
+        });
 
 
         // Make the OpenGL context current.
@@ -173,9 +159,13 @@ public class Window {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         this.framebuffer = new Framebuffer(1920, 1080);
+        this.pickingTexture = new PickingTexture(1920, 1080);
         glViewport(0,0, 1920, 1080);
 
-        Window.changeScene(0);
+        this.imguiLayer = new ImGuiLayer(glfwWindow, pickingTexture);
+        this.imguiLayer.init();
+
+        Window.changeScene(new LevelEditorSceneInitializer());
     }
 
     public void loop(){
@@ -183,26 +173,48 @@ public class Window {
         float endTime;
         float deltaTime = -1.0f;
 
+        Shader defaultShader = AssetPool.getShader("assets/shaders/default.glsl");
+        Shader pickingShader = AssetPool.getShader("assets/shaders/pickingShader.glsl");
+
 
         while(!glfwWindowShouldClose(glfwWindow)){
             // Poll events. Gets all key, mouse events.
             glfwPollEvents();
 
-            DebugDraw.beginFrame();
 
+            glDisable(GL_BLEND);
+            pickingTexture.enableWriting();
+
+            glViewport(0, 0, 1920, 1080);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            Renderer.bindShader(pickingShader);
+            currentScene.render();
+
+            pickingTexture.disableWriting();
+            glEnable(GL_BLEND);
+
+            DebugDraw.beginFrame();
             this.framebuffer.bind();
             // Sets Clear Color to white
-            glClearColor(r, g,b, a);
+            glClearColor(1, 1, 1, 1);
             // Tells OpenGL how to buffer. Sets the clear color(above) to flush our entire screen.
             glClear(GL_COLOR_BUFFER_BIT);
 
             if(deltaTime >= 0) {
                 DebugDraw.draw();
-                currentScene.onUpdate(deltaTime);
+                Renderer.bindShader(defaultShader);
+                if (editorMode)
+                    currentScene.editorUpdate(deltaTime);
+
+                else
+                    currentScene.onUpdate(deltaTime);
+                currentScene.render();
             }
             this.framebuffer.unbind();
 
-            imGuiLayer.onUpdate(deltaTime, currentScene);
+            imguiLayer.onUpdate(deltaTime, currentScene);
             glfwSwapBuffers(glfwWindow);
             MouseListener.endFrame();
 
@@ -210,13 +222,43 @@ public class Window {
             deltaTime = endTime - beginTime;
             beginTime = endTime;
         }
-
-        currentScene.saveExit();
     }
 
     public void destroy(){
-        imGuiLayer.destroy();
+        imguiLayer.destroy();
     }
+
+    @Override
+    public void onNotify(GameObject object, Event event) {
+        switch  (event.type){
+            case GameEngineStartPlay:
+                System.out.println("Starting play!");
+                this.editorMode = false;
+                currentScene.save();
+                Window.changeScene(new LevelEditorSceneInitializer()); // Save & Reset
+                break;
+            case GameEngineStopPlay:
+                System.out.println("Stopping play");
+                Window.changeScene(new LevelEditorSceneInitializer());
+                this.editorMode = true;
+                break;
+            case LoadLevel:
+                System.out.println("Loading scene");
+                Window.changeScene(new LevelEditorSceneInitializer());
+                break;
+            case SaveLevel:
+                System.out.println("Saving scene");
+                currentScene.save();
+                break;
+        }
+        if(event.type == EventType.GameEngineStartPlay){
+            System.out.println("Starting play");
+        }
+        if (event.type == EventType.GameEngineStopPlay){
+            System.out.println("Stopping play");
+        }
+    }
+
 
     public static int getWidth(){
         return get().width;
@@ -227,11 +269,11 @@ public class Window {
     }
 
 
-    public void setWidth(int newWidth) {
+    public static void setWidth(int newWidth) {
         get().width = newWidth;
     }
 
-    public void setHeight(int newHeight) {
+    public static void setHeight(int newHeight) {
         get().height = newHeight;
     }
 
@@ -242,4 +284,17 @@ public class Window {
     public static float getTargetAspectRatio(){
         return 16.0f / 9.0f;
     }
+
+    public boolean isInEditorMode() {
+        return editorMode;
+    }
+
+    public void setEditorMode(boolean editorMode) {
+        this.editorMode = editorMode;
+    }
+
+    public static ImGuiLayer getImguiLayer() {
+        return get().imguiLayer;
+    }
+
 }

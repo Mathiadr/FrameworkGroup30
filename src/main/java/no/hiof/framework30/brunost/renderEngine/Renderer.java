@@ -17,6 +17,7 @@ import java.util.List;
 public class Renderer {
     private final int MAX_BATCH_SIZE = 1000;
     private List<RenderBatch> batches;
+    private static Shader currentShader;
 
     public Renderer(){
         this.batches = new ArrayList<>();
@@ -51,10 +52,28 @@ public class Renderer {
         }
     }
 
+    public void destroyGameObject(GameObject gameObject){
+        if (gameObject.getComponent(SpriteRenderer.class) == null) return;
+        for (RenderBatch batch : batches){
+            if(batch.destroyIfExists(gameObject)){
+                return;
+            }
+        }
+    }
+
     public void render() {
+        currentShader.use();
         for (RenderBatch batch:
              batches) {
             batch.render();
         }
+    }
+
+    public static void bindShader(Shader shader){
+        currentShader = shader;
+    }
+
+    public static Shader getBoundShader(){
+        return currentShader;
     }
 }

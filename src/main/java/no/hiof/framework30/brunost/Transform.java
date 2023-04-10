@@ -1,6 +1,7 @@
 package no.hiof.framework30.brunost;
 
 import no.hiof.framework30.brunost.components.Component;
+import no.hiof.framework30.brunost.editor.JImGui;
 import org.joml.Vector2f;
 
 // Source: GamesWithGabe, 27.09.21 - https://www.youtube.com/playlist?list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE
@@ -32,6 +33,14 @@ public class Transform extends Component {
         this.zIndex = 0;
     }
 
+    @Override
+    public void imgui() {
+        JImGui.drawVec2Control("Position", this.position);
+        JImGui.drawVec2Control("Scale", this.scale, 32.0f);
+        JImGui.dragFloat("Rotation", this.rotation);
+        JImGui.dragInt("Z-Index", this.zIndex);
+    }
+
     public Transform copy(){
         return new Transform(new Vector2f(this.position), new Vector2f(this.scale));
     }
@@ -46,6 +55,7 @@ public class Transform extends Component {
         if (obj == null) return false;
         if (!(obj instanceof Transform)) return false;
         Transform transform = (Transform) obj;
-        return transform.position.equals(this.position) && transform.scale.equals(this.scale);
+        return transform.position.equals(this.position) && transform.scale.equals(this.scale) &&
+                transform.rotation == this.rotation && transform.zIndex == this.zIndex;
     }
 }

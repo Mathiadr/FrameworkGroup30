@@ -10,6 +10,8 @@ import imgui.internal.ImGuiDockNode;
 import imgui.internal.ImGuiWindow;
 import imgui.type.ImBoolean;
 import no.hiof.framework30.brunost.editor.GameViewWindow;
+import no.hiof.framework30.brunost.editor.MenuBar;
+import no.hiof.framework30.brunost.editor.PropertiesWindow;
 import no.hiof.framework30.brunost.scenes.Scene;
 import no.hiof.framework30.brunost.util.MouseListener;
 import no.hiof.framework30.brunost.util.Window;
@@ -20,17 +22,22 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class ImGuiLayer {
     private long glfwWindow;
-    private String glslVersion = null;
+    private String glslVersion = "#version 330 core";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
 
-    public ImGuiLayer(){
-    }
-    public void init(long glfwWindow){
-        this.glfwWindow = glfwWindow;
-        ImGui.createContext();
+    private MenuBar menuBar;
+    private GameViewWindow gameViewWindow;
+    private PropertiesWindow propertiesWindow;
 
-        glslVersion = "#version 330 core";
+    public ImGuiLayer(long glfwWindow, PickingTexture pickingTexture){
+        this.glfwWindow = glfwWindow;
+        this.gameViewWindow = new GameViewWindow();
+        this.propertiesWindow = new PropertiesWindow(pickingTexture);
+        this.menuBar = new MenuBar();
+    }
+    public void init(){
+        ImGui.createContext();
 
         final ImGuiIO io = ImGui.getIO();
 
@@ -53,7 +60,7 @@ public class ImGuiLayer {
 
             io.setMouseDown(mouseDown);
 
-            if (!io.getWantCaptureMouse() || GameViewWindow.getWantCaptureMouse()) {
+            if (!io.getWantCaptureMouse() || gameViewWindow.getWantCaptureMouse()) {
                 MouseListener.mouseButtonCallback(w, button, action, mods);
             }
 
@@ -97,8 +104,11 @@ public class ImGuiLayer {
         ImGui.newFrame();
         ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
         setupDockspace();
+        gameViewWindow.imgui();
+        propertiesWindow.update(deltaTime, currentScene);
+        propertiesWindow.imgui();
+        menuBar.imgui();
         currentScene.sceneImgui();
-        GameViewWindow.imgui();
         ImGui.end();
         ImGui.render();
 
@@ -160,5 +170,21 @@ public class ImGuiLayer {
 
     public void setGlslVersion(String glslVersion) {
         this.glslVersion = glslVersion;
+    }
+
+    public GameViewWindow getGameViewWindow() {
+        return gameViewWindow;
+    }
+
+    public void setGameViewWindow(GameViewWindow gameViewWindow) {
+        this.gameViewWindow = gameViewWindow;
+    }
+
+    public PropertiesWindow getPropertiesWindow() {
+        return propertiesWindow;
+    }
+
+    public void setPropertiesWindow(PropertiesWindow propertiesWindow) {
+        this.propertiesWindow = propertiesWindow;
     }
 }
