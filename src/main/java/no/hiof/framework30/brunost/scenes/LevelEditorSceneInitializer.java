@@ -96,7 +96,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
 
             ImGui.pushID(i);
             if(ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)){
-                GameObject object = Prefab.generateSpriteObject(sprite, 32*3, 32*3);
+                GameObject object = Prefab.generateSpriteObject(sprite, 0.25f, 0.25f);
                 // Attach to mouse cursor
                 levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }
@@ -119,7 +119,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
 
             ImGui.pushID(i);
             if(ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)){
-                GameObject object = Prefab.generateSpriteObject(sprite, 64, 64);
+                GameObject object = Prefab.generateSpriteObject(sprite, 0.25f, 0.25f);
                 // Attach to mouse cursor
                 levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }

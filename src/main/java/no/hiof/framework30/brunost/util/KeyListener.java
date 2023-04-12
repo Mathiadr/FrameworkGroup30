@@ -42,7 +42,11 @@ public class KeyListener {
     }
 
     public static boolean keyBeginPress(int keyCode){
-        return get().keyBeginPress[keyCode];
+        boolean result = get().keyBeginPress[keyCode];
+        if (result){
+            get().keyBeginPress[keyCode] = false;
+        }
+        return result;
     }
 
 }

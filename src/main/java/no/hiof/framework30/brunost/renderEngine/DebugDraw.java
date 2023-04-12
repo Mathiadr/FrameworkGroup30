@@ -102,7 +102,7 @@ public class DebugDraw {
         glEnableVertexAttribArray(1);
 
         // Draw the batch
-        glDrawArrays(GL_LINES, 0, lines.size() * 6 * 2);
+        glDrawArrays(GL_LINES, 0, lines.size() * 2);
 
         // Disable Location
         glDisableVertexAttribArray(0);
@@ -136,7 +136,7 @@ public class DebugDraw {
         // Bottom Left Corner
         Vector2f min = new Vector2f(center).sub(new Vector2f(dimensions).mul(0.5f));
         // Top right Corner
-        Vector2f max = new Vector2f(center).add(new Vector2f(dimensions)).mul(0.5f);
+        Vector2f max = new Vector2f(center).add(new Vector2f(dimensions).mul(0.5f));
 
         Vector2f[] vertices = {
             new Vector2f(min.x, min.y), new Vector2f(min.x, max.y),
@@ -169,7 +169,7 @@ public class DebugDraw {
         int increment = 360 / points.length;
         int currentAngle = 0;
         for (int i=0; i < points.length; i++){
-            Vector2f temp = new Vector2f(radius, 0);
+            Vector2f temp = new Vector2f(0, radius);
             JMath.rotate(temp, currentAngle, new Vector2f());
             points[i] = new Vector2f(temp).add(center);
 

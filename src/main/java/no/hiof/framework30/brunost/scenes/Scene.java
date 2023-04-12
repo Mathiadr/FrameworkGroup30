@@ -209,8 +209,8 @@ public class Scene {
 
             maxGameObjectId++;
             maxCompId++;
-            GameObject.init(maxGameObjectId++);
-            Component.init(maxCompId++);
+            GameObject.init(maxGameObjectId);
+            Component.init(maxCompId);
         }
     }
 

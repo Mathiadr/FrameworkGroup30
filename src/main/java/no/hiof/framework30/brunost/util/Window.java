@@ -239,8 +239,8 @@ public class Window implements Observer {
                 break;
             case GameEngineStopPlay:
                 System.out.println("Stopping play");
-                Window.changeScene(new LevelEditorSceneInitializer());
                 this.editorMode = true;
+                Window.changeScene(new LevelEditorSceneInitializer());
                 break;
             case LoadLevel:
                 System.out.println("Loading scene");
