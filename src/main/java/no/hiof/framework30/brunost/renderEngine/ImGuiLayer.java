@@ -19,6 +19,9 @@ import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class ImGuiLayer {
     private long glfwWindow;
@@ -100,27 +103,30 @@ public class ImGuiLayer {
     public void onUpdate(float deltaTime, Scene currentScene){
         startFrame(deltaTime);
 
-        imGuiGlfw.newFrame();
-        ImGui.newFrame();
         ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
         setupDockspace();
+        currentScene.imgui();
         gameViewWindow.imgui();
         propertiesWindow.update(deltaTime, currentScene);
         propertiesWindow.imgui();
-        menuBar.imgui();
         currentScene.sceneImgui();
-        ImGui.end();
-        ImGui.render();
 
         endFrame();
-
     }
 
     public void startFrame(float deltaTime){
-
+        imGuiGlfw.newFrame();
+        ImGui.newFrame();
     }
 
     public void endFrame(){
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0,0, Window.getWidth(), Window.getHeight());
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        ImGui.render();
+
         imGuiGl3.renderDrawData(ImGui.getDrawData());
         if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
             ImGui.updatePlatformWindows();
@@ -144,7 +150,8 @@ public class ImGuiLayer {
 
         // Dockspace
         ImGui.dockSpace(ImGui.getID("Dockspace Demo"));
-
+        menuBar.imgui();
+        ImGui.end();
     }
 
     public void destroy(){

@@ -36,8 +36,7 @@ public class GameViewWindow {
 
         ImVec2 topLeft = new ImVec2();
         ImGui.getCursorScreenPos(topLeft);
-        topLeft.x -= ImGui.getScrollX();
-        topLeft.y -= ImGui.getScrollY();
+
         leftX = topLeft.x;
         bottomY = topLeft.y;
         rightX = topLeft.x + windowSize.x;
@@ -56,8 +55,7 @@ public class GameViewWindow {
     private ImVec2 getLargestSizeForViewport(){
         ImVec2 windowSize = new ImVec2();
         ImGui.getContentRegionAvail(windowSize);
-        windowSize.x -= ImGui.getScrollX();
-        windowSize.y -= ImGui.getScrollY();
+
 
         float aspectWidth = windowSize.x;
         float aspectHeight = aspectWidth / Window.getTargetAspectRatio();
@@ -72,8 +70,6 @@ public class GameViewWindow {
     private ImVec2 getCenteredPositionForViewport(ImVec2 aspectSize){
         ImVec2 windowSize = new ImVec2();
         ImGui.getContentRegionAvail(windowSize);
-        windowSize.x -= ImGui.getScrollX();
-        windowSize.y -= ImGui.getScrollY();
 
         float viewportX = (windowSize.x / 2.0f) - (aspectSize.x / 2.0f);
         float viewportY = (windowSize.y / 2.0f) - (aspectSize.y / 2.0f);
