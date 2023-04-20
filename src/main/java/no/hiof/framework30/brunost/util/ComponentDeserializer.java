@@ -1,6 +1,7 @@
-package no.hiof.framework30.brunost.components;
+package no.hiof.framework30.brunost.util;
 
 import com.google.gson.*;
+import no.hiof.framework30.brunost.components.Component;
 
 import java.lang.reflect.Type;
 

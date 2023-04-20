@@ -1,12 +1,14 @@
-package no.hiof.framework30.brunost.components;
+package no.hiof.framework30.brunost.editor;
 
+import no.hiof.framework30.brunost.components.Component;
+import no.hiof.framework30.brunost.components.SpriteSheet;
 import no.hiof.framework30.brunost.util.KeyListener;
 import no.hiof.framework30.brunost.util.Window;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
 
-public class GizmoSystem extends Component{
+public class GizmoSystem extends Component {
     private SpriteSheet gizmos;
     private int usingGizmo = 0;
 

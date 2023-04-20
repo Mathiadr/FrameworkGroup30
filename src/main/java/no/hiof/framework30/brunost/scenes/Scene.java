@@ -2,10 +2,9 @@ package no.hiof.framework30.brunost.scenes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import imgui.ImGui;
-import no.hiof.framework30.brunost.Transform;
-import no.hiof.framework30.brunost.components.ComponentDeserializer;
-import no.hiof.framework30.brunost.components.GameObjectDeserializer;
+import no.hiof.framework30.brunost.components.Transform;
+import no.hiof.framework30.brunost.util.ComponentDeserializer;
+import no.hiof.framework30.brunost.util.GameObjectDeserializer;
 import no.hiof.framework30.brunost.components.Component;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
 import no.hiof.framework30.brunost.physicsEngine.Physics2D;

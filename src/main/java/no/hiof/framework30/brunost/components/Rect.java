@@ -1,4 +1,4 @@
-package no.hiof.framework30.brunost.util;
+package no.hiof.framework30.brunost.components;
 
 import no.hiof.framework30.brunost.components.Component;
 import no.hiof.framework30.brunost.renderEngine.Texture;

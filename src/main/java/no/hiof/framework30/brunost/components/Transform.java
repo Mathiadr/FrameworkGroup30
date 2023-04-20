@@ -1,6 +1,5 @@
-package no.hiof.framework30.brunost;
+package no.hiof.framework30.brunost.components;
 
-import no.hiof.framework30.brunost.components.Component;
 import no.hiof.framework30.brunost.editor.JImGui;
 import org.joml.Vector2f;
 

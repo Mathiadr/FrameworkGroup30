@@ -1,6 +1,6 @@
-package no.hiof.framework30.brunost.components;
+package no.hiof.framework30.brunost.editor;
 
-import no.hiof.framework30.brunost.editor.PropertiesWindow;
+import no.hiof.framework30.brunost.components.Sprite;
 import no.hiof.framework30.brunost.util.MouseListener;
 
 public class ScaleGizmo extends Gizmo{

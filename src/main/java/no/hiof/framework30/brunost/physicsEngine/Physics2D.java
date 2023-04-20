@@ -1,6 +1,6 @@
 package no.hiof.framework30.brunost.physicsEngine;
 
-import no.hiof.framework30.brunost.Transform;
+import no.hiof.framework30.brunost.components.Transform;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
 import no.hiof.framework30.brunost.physicsEngine.components.Box2DCollider;
 import no.hiof.framework30.brunost.physicsEngine.components.CircleCollider;

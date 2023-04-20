@@ -1,4 +1,4 @@
-package no.hiof.framework30.brunost;
+package no.hiof.framework30.brunost.util;
 
 import no.hiof.framework30.brunost.components.Component;
 import no.hiof.framework30.brunost.components.NonPickable;

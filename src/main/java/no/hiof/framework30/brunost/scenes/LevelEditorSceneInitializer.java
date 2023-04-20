@@ -3,12 +3,13 @@ package no.hiof.framework30.brunost.scenes;
 
 import imgui.ImGui;
 import imgui.ImVec2;
-import no.hiof.framework30.brunost.MouseControls;
-import no.hiof.framework30.brunost.Prefab;
+import no.hiof.framework30.brunost.util.MouseControls;
+import no.hiof.framework30.brunost.gameObjects.Prefab;
 import no.hiof.framework30.brunost.components.*;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
 import no.hiof.framework30.brunost.util.AssetPool;
 import no.hiof.framework30.brunost.util.EditorCamera;
+import no.hiof.framework30.brunost.editor.GizmoSystem;
 import org.joml.Vector2f;
 
 
@@ -53,12 +54,17 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
                 new SpriteSheet(AssetPool.getTexture("assets/images/gizmos.png"),
                         24, 48, 3, 0));
 
+
         // Avoids missing textures issues when it comes to saving textures
         for (GameObject gameObject: scene.getGameObjects()) {
             if (gameObject.getComponent(SpriteRenderer.class) != null){
                 SpriteRenderer spriteRenderer = gameObject.getComponent(SpriteRenderer.class);
                 if (spriteRenderer.getTexture() != null)
                     spriteRenderer.setTexture(AssetPool.getTexture(spriteRenderer.getTexture().getFilepath()));
+            }
+            if (gameObject.getComponent(Animator.class) != null){
+                Animator animator = gameObject.getComponent(Animator.class);
+                animator.refreshTextures();
             }
         }
     }
@@ -86,40 +92,33 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
         ImGui.getStyle().getItemSpacing(itemSpacing);
 
         float windowX2 = windowPos.x + windowSize.x;
-        for(int i = 0; i < spritesSpritesheet.size(); i++ ){
-            Sprite sprite = spritesSpritesheet.getSprite(i);
-            // TODO: Change these
-            float spriteWidth = sprite.getWidth();
-            float spriteHeight = sprite.getHeight();
-            int id = sprite.getTexId();
-            Vector2f[] texCoords = sprite.getTexCoords();
 
-            ImGui.pushID(i);
-            if(ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)){
-                GameObject object = Prefab.generateSpriteObject(sprite, 0.25f, 0.25f);
-                // Attach to mouse cursor
-                levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
-            }
-            ImGui.popID();
+        Sprite playerSprite = spritesSpritesheet.getSprite(0);
+        // TODO: Change these
+        float spriteWidth = playerSprite.getWidth();
+        float spriteHeight = playerSprite.getHeight();
+        int id = playerSprite.getTexId();
+        Vector2f[] texCoords = playerSprite.getTexCoords();
 
-            ImVec2 lastButtonPos = new ImVec2();
-            ImGui.getItemRectMax(lastButtonPos);
-            float  lastButtonX2 = lastButtonPos.x;
-            float  nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
-            if (i+1 < spritesSpritesheet.size() && nextButtonX2 < windowX2)
-                ImGui.sameLine();
-       }
+        if(ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)){
+            GameObject object = Prefab.generateDefaultCharacter();
+            // Attach to mouse cursor
+            levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
+        }
+        ImGui.sameLine();
+
+
         for(int i = 0; i < defaultTilesSpritesheet.size(); i++ ){
-            Sprite sprite = defaultTilesSpritesheet.getSprite(i);
+            Sprite tile = defaultTilesSpritesheet.getSprite(i);
             // TODO: Change these
-            float spriteWidth = sprite.getWidth();
-            float spriteHeight = sprite.getHeight();
-            int id = sprite.getTexId();
-            Vector2f[] texCoords = sprite.getTexCoords();
+            float tileSpriteWidth = tile.getWidth();
+            float tileSpriteHeight = tile.getHeight();
+            int tileId = tile.getTexId();
+            Vector2f[] tileTexCoords = tile.getTexCoords();
 
             ImGui.pushID(i);
-            if(ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)){
-                GameObject object = Prefab.generateSpriteObject(sprite, 0.25f, 0.25f);
+            if(ImGui.imageButton(tileId, tileSpriteWidth, tileSpriteHeight, tileTexCoords[2].x, tileTexCoords[0].y, tileTexCoords[0].x, tileTexCoords[2].y)){
+                GameObject object = Prefab.generateSpriteObject(tile, 0.25f, 0.25f);
                 // Attach to mouse cursor
                 levelEditorStuff.getComponent(MouseControls.class).pickupObject(object);
             }
@@ -128,7 +127,7 @@ public class LevelEditorSceneInitializer extends SceneInitializer {
             ImVec2 lastButtonPos = new ImVec2();
             ImGui.getItemRectMax(lastButtonPos);
             float  lastButtonX2 = lastButtonPos.x;
-            float  nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
+            float  nextButtonX2 = lastButtonX2 + itemSpacing.x + tileSpriteWidth;
             if (i+1 < defaultTilesSpritesheet.size() && nextButtonX2 < windowX2)
                 ImGui.sameLine();
         }

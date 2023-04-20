@@ -1,7 +1,10 @@
-package no.hiof.framework30.brunost.components;
+package no.hiof.framework30.brunost.editor;
 
-import no.hiof.framework30.brunost.Prefab;
-import no.hiof.framework30.brunost.editor.PropertiesWindow;
+import no.hiof.framework30.brunost.gameObjects.Prefab;
+import no.hiof.framework30.brunost.components.Component;
+import no.hiof.framework30.brunost.components.NonPickable;
+import no.hiof.framework30.brunost.components.Sprite;
+import no.hiof.framework30.brunost.components.SpriteRenderer;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
 import no.hiof.framework30.brunost.util.KeyListener;
 import no.hiof.framework30.brunost.util.MouseListener;
@@ -11,7 +14,7 @@ import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Gizmo extends Component{
+public class Gizmo extends Component {
     private Vector4f xAxisColor = new Vector4f(1f, 0.3f, 0.3f, 1f);
     private Vector4f xAxisColorHover = new Vector4f(1f, 0, 0, 1f);
     private Vector4f yAxisColor = new Vector4f(0.3f, 1f, 0.3f, 1f);

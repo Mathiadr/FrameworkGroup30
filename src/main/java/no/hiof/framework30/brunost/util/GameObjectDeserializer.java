@@ -1,7 +1,8 @@
-package no.hiof.framework30.brunost.components;
+package no.hiof.framework30.brunost.util;
 
 import com.google.gson.*;
-import no.hiof.framework30.brunost.Transform;
+import no.hiof.framework30.brunost.components.Transform;
+import no.hiof.framework30.brunost.components.Component;
 import no.hiof.framework30.brunost.gameObjects.GameObject;
 
 import java.lang.reflect.Type;
